@@ -212,17 +212,22 @@ app.get('/api/health', (req, res) => {
 
 // Serve frontend
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index-working.html'));
+});
+
+// Serve original index for reference
+app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Serve login page
 app.get('/login.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    res.sendFile(path.join(__dirname, 'public', 'login-working.html'));
 });
 
 // Serve signup page
 app.get('/signup.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+    res.sendFile(path.join(__dirname, 'public', 'signup-working.html'));
 });
 
 // 404 handler
