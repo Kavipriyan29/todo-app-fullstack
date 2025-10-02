@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Stay Organized</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .app-header {
+            position: relative;
+            padding: 30px;
+            text-align: center;
+            background: #f8f9fa;
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .app-header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .app-header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        /* Input Section */
+        .input-section {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .todo-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .todo-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .todo-input::placeholder {
+            color: #a0aec0;
+        }
+
+        .add-btn {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .add-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            background: white;
+            color: #718096;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Todos Section */
+        .todos-section {
+            padding: 20px;
+            max-height: 460px;
+            overflow-y: auto;
+        }
+
+        .todos-section::-webkit-scrollbar { width: 8px; }
+        .todos-section::-webkit-scrollbar-track { background: #f8f9fa; }
+        .todos-section::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .todo-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .todo-item:hover { 
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.12);
+            transform: translateY(-3px);
+            border-color: rgba(102, 126, 234, 0.25);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .todo-item:hover::before {
+            opacity: 1;
+        }
+
+        .todo-item > * {
+            position: relative;
+            z-index: 1;
+        }
+        .todo-item:last-child { margin-bottom: 0; }
+
+        /* Completed todo styling */
+        .todo-item.completed {
+            border-color: rgba(160, 174, 192, 0.2);
+            background: rgba(248, 250, 252, 0.8);
+        }
+
+        .todo-item.completed::before {
+            background: linear-gradient(135deg, rgba(160, 174, 192, 0.02) 0%, rgba(160, 174, 192, 0.02) 100%);
+        }
+
+        .todo-item.completed:hover {
+            border-color: rgba(160, 174, 192, 0.3);
+            box-shadow: 0 6px 20px rgba(160, 174, 192, 0.1);
+        }
+
+        /* Custom Checkbox */
+        .todo-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #577ca4;
+            border-radius: 6px;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .todo-checkbox:hover { border-color: #667eea; }
+        .todo-checkbox.completed { background: #667eea; border-color: #667eea; }
+        .todo-checkbox.completed::after {
+            content: '✓';
+            color: rgb(255, 255, 255);
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+        }
+
+        /* Todo Text */
+        .todo-text { flex: 1; margin-right: 15px; color: #2d3748; font-size: 1em; transition: all 0.3s ease; }
+        .todo-text.completed { color: #a0aec0; text-decoration: line-through; }
+
+        /* Priority Badge */
+        .priority-badge { padding: 4px 8px; border-radius: 15px; font-size: 0.8em; margin-right: 15px; }
+        .priority-high { background: #fed7d7; color: #e53e3e; }
+        .priority-medium { background: #feebc8; color: #dd6b20; }
+        .priority-low { background: #c6f6d5; color: #38a169; }
+
+        /* Action Buttons */
+        .todo-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .todo-item:hover .todo-actions { opacity: 1; }
+        
+        .edit-btn, .delete-btn { 
+            padding: 8px 12px; 
+            background: none; 
+            border: 2px solid transparent; 
+            border-radius: 8px;
+            cursor: pointer; 
+            font-size: 14px; 
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+        
+        .edit-btn {
+            color: #667eea;
+            border-color: rgba(102, 126, 234, 0.3);
+            background: rgba(102, 126, 234, 0.05);
+        }
+        .edit-btn:hover { 
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .delete-btn {
+            color: #e53e3e;
+            border-color: rgba(229, 62, 62, 0.3);
+            background: rgba(229, 62, 62, 0.05);
+        }
+        .delete-btn:hover { 
+            background: rgba(229, 62, 62, 0.1);
+            border-color: #e53e3e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
+        }
+        
+        /* Edit Mode Styles */
+        .todo-item.editing {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .todo-edit-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            background: rgb(231, 227, 227);
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .todo-edit-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .edit-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 1;
+        }
+        
+        .save-btn, .cancel-btn {
+            padding: 6px 12px;
+            border: 2px solid;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn {
+            background: #48bb78;
+            color: white;
+            border-color: #48bb78;
+        }
+        .save-btn:hover {
+            background: #38a169;
+            transform: translateY(-1px);
+        }
+        
+        .cancel-btn {
+            background: #718096;
+            color: white;
+            border-color: #718096;
+        }
+        .cancel-btn:hover {
+            background: #4a5568;
+            transform: translateY(-1px);
+        }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px 20px; color: #718096; }
+        .empty-state-icon { font-size: 3em; margin-bottom: 15px; }
+        .empty-state h3 { margin-bottom: 10px; color: #2d3748; }
+        .empty-state p { color: #718096; }
+
+        /* Stats Section */
+        .stats { display: flex; justify-content: space-around; padding: 20px; background: #f8f9fa; border-top: 1px solid #e9ecef; }
+        .stats-item { text-align: center; color: #718096; }
+        .stats-number { display: block; font-size: 1.5em; font-weight: 600; color: #2d3748; margin-bottom: 5px; }
+
+        /* Animations */
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOutRight { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100px); } }
+
+        /* Monthly Planner Styles */
+        .planner-header { padding: 15px 20px; background: #f8f9fa; border-bottom: 2px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+        .planner-controls { display: flex; align-items: center; gap: 10px; }
+        .planner-btn { background: #667eea; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.85em; cursor: pointer; transition: background 0.2s ease; }
+        .planner-btn:hover { background: #5a67d8; }
+        .planner-date { font-weight: 700; color: #2d3748; }
+
+        .monthly-planner { padding: 10px 20px 20px; }
+        .weekday-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 6px; color: #718096; font-size: 0.85em; text-align: center; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .day-cell { min-height: 110px; background: white; border: 1px solid #e9ecef; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; gap: 6px; transition: background 0.2s ease, box-shadow 0.2s ease; }
+        .day-cell:hover { background: #f8f9fa; box-shadow: 0 4px 6px rgba(0,0,0,0.04); }
+        .day-cell.inactive { background: #fafafa; color: #a0aec0; }
+        .day-header { display: flex; justify-content: space-between; align-items: center; }
+        .day-number { font-weight: 700; color: #2d3748; }
+        .note-indicator { font-size: 0.9em; color: #667eea; }
+        .day-textarea { width: 100%; border: none; background: transparent; color: #2d3748; font-size: 0.9em; padding: 4px 0; resize: none; outline: none; font-family: inherit; min-height: 48px; }
+        .day-actions { display: flex; justify-content: flex-end; gap: 6px; opacity: 0; transition: opacity 0.2s ease; }
+        .day-cell:hover .day-actions { opacity: 1; }
+        .clear-day-btn { background: none; border: 1px solid #e53e3e; color: #e53e3e; font-size: 12px; cursor: pointer; padding: 2px 8px; border-radius: 6px; transition: background 0.2s ease; }
+        .clear-day-btn:hover { background: rgba(229, 62, 62, 0.08); }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .app-container { 
+                max-width: 95%; 
+                margin: 15px auto; 
+            }
+            .dark-mode-toggle {
+                top: 15px;
+                right: 15px;
+                padding: 10px 14px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .app-container { 
+                margin: 5px auto; 
+                border-radius: 15px; 
+                max-width: 100%;
+            }
+            .app-header { 
+                padding: 25px 15px; 
+                position: relative;
+            }
+            .app-header h1 { 
+                font-size: 1.8rem; 
+                margin-bottom: 8px;
+            }
+            .app-header p { 
+                font-size: 1rem; 
+            }
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 14px;
+                border-radius: 10px;
+            }
+            .dark-mode-toggle::after {
+                font-size: 12px;
+            }
+            .input-section { 
+                padding: 20px 15px; 
+            }
+            .input-container {
+                gap: 15px;
+            }
+            .todo-input {
+                padding: 14px 16px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            .add-btn {
+                padding: 14px 20px;
+                font-size: 16px;
+            }
+            .filter-section { 
+                padding: 15px; 
+                gap: 8px; 
+                justify-content: center;
+            }
+            .filter-btn { 
+                padding: 10px 16px; 
+                font-size: 14px; 
+                flex: 1;
+                min-width: 0;
+                text-align: center;
+            }
+            .todos-section {
+                padding: 15px;
+                max-height: 400px;
+            }
+            .todo-item { 
+                padding: 16px 15px; 
+                flex-wrap: wrap;
+                gap: 12px;
+                border-width: 2px;
+                margin-bottom: 15px;
+            }
+            .todo-checkbox {
+                width: 24px;
+                height: 24px;
+            }
+            .todo-text {
+                font-size: 16px;
+                margin-right: 10px;
+            }
+            .priority-badge {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .todo-actions {
+                opacity: 1; /* Always visible on mobile */
+            }
+            .edit-btn, .delete-btn {
+                padding: 10px 14px;
+                font-size: 14px;
+                min-width: 44px;
+                min-height: 44px;
+                justify-content: center;
+            }
+            .empty-state { 
+                padding: 40px 15px; 
+            }
+            .empty-state-icon {
+                font-size: 2.5em;
+            }
+            .stats { 
+                padding: 15px; 
+                flex-direction: column;
+                gap: 10px;
+            }
+            .stats-item { 
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #e9ecef;
+            }
+            .stats-item:last-child {
+                border-bottom: none;
+            }
+            .stats-number {
+                font-size: 1.3em;
+                margin-bottom: 0;
+            }
+            .day-cell { 
+                min-height: 100px; 
+                padding: 6px;
+            }
+            .day-textarea {
+                min-height: 40px;
+                font-size: 14px;
+            }
+            .calendar-grid {
+                gap: 4px;
+            }
+            .planner-header {
+                padding: 12px 15px;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            .planner-controls {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-header h1 { 
+                font-size: 1.6rem; 
+            }
+            .filter-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .filter-btn {
+                flex: none;
+                width: 100%;
+            }
+            .todo-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .todo-checkbox {
+                align-self: flex-start;
+                margin-right: 0;
+            }
+            .todo-text {
+                margin-right: 0;
+                width: 100%;
+            }
+            .priority-badge {
+                align-self: flex-start;
+                margin-right: 0;
+            }
+            .todo-actions {
+                align-self: flex-end;
+                margin-top: -40px;
+            }
+            .edit-btn, .delete-btn {
+                padding: 8px 12px;
+                min-width: 40px;
+                min-height: 40px;
+            }
+            .stats {
+                text-align: center;
+            }
+            .day-cell {
+                min-height: 80px;
+                padding: 4px;
+            }
+            .day-textarea {
+                min-height: 30px;
+                font-size: 12px;
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .todos-section {
+                max-height: 250px;
+            }
+            .app-header {
+                padding: 20px 15px;
+            }
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .todo-item:hover {
+                transform: none;
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.08);
+                border-color: rgba(102, 126, 234, 0.2);
+            }
+            .todo-item.completed:hover {
+                box-shadow: 0 4px 12px rgba(160, 174, 192, 0.08);
+                border-color: rgba(160, 174, 192, 0.25);
+            }
+            .filter-btn:hover {
+                transform: none;
+            }
+            .add-btn:hover {
+                transform: none;
+            }
+            .todo-actions {
+                opacity: 1;
+            }
+            .edit-btn, .delete-btn {
+                opacity: 1;
+                min-width: 44px;
+                min-height: 44px;
+            }
+        }
+
+        /* Dark mode styles */
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 2;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        .dark-mode-toggle:hover { 
+            background: rgba(255,255,255,1);
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .dark-mode-toggle:active {
+            transform: translateY(0);
+        }
+        .dark-mode-toggle::after {
+            content: 'Light';
+            font-size: 14px;
+        }
+        
+        /* Dark mode active state */
+        body.dark-mode .dark-mode-toggle {
+            background: rgba(45, 55, 72, 0.95);
+            color: #ffd700;
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        body.dark-mode .dark-mode-toggle:hover {
+            background: rgba(45, 55, 72, 1);
+            border-color: #ffd700;
+        }
+        body.dark-mode .dark-mode-toggle::after {
+            content: 'Dark';
+        }
+        
+        /* Dark mode theme */
+        body.dark-mode {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+        body.dark-mode .app-container {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+        body.dark-mode .app-header {
+            background: #1a202c;
+        }
+        body.dark-mode .app-header h1 {
+            color: #e2e8f0;
+        }
+        body.dark-mode .app-header p {
+            color: #a0aec0;
+        }
+        body.dark-mode .todo-input {
+            background: #4a5568;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+        body.dark-mode .todo-input::placeholder {
+            color: #a0aec0;
+        }
+        body.dark-mode .todo-item {
+            background: #4a5568;
+            border-color: rgba(102, 126, 234, 0.15);
+        }
+
+        body.dark-mode .todo-item::before {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        body.dark-mode .todo-item:hover {
+            background: rgba(74, 85, 104, 0.95);
+            border-color: rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        body.dark-mode .todo-item.completed {
+            border-color: rgba(113, 128, 150, 0.25);
+            background: rgba(58, 65, 78, 0.8);
+        }
+
+        body.dark-mode .todo-item.completed::before {
+            background: linear-gradient(135deg, rgba(113, 128, 150, 0.03) 0%, rgba(113, 128, 150, 0.03) 100%);
+        }
+
+        body.dark-mode .todo-item.completed:hover {
+            border-color: rgba(113, 128, 150, 0.4);
+            box-shadow: 0 6px 20px rgba(113, 128, 150, 0.15);
+        }
+        body.dark-mode .todo-text {
+            color: #e2e8f0;
+        }
+        body.dark-mode .stats {
+            background: #1a202c;
+        }
+        body.dark-mode .stats-number {
+            color: #e2e8f0;
+        }
+        body.dark-mode .filter-btn {
+            background: #4a5568;
+            color: #e2e8f0;
+            border-color: #718096;
+        }
+        body.dark-mode .filter-btn:hover {
+            background: #718096;
+        }
+        body.dark-mode .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        body.dark-mode .day-cell {
+            background: #4a5568;
+            border-color: #718096;
+        }
+        body.dark-mode .day-cell:hover {
+            background: #718096;
+        }
+        body.dark-mode .day-number {
+            color: #e2e8f0;
+        }
+        body.dark-mode .day-textarea {
+            color: #e2e8f0;
+        }
+        body.dark-mode .planner-header {
+            background: #1a202c;
+        }
+        body.dark-mode .planner-date {
+            color: #e2e8f0;
+        }
+        body.dark-mode .todo-edit-input {
+            background: #4a5568;
+            border-color: #667eea;
+            color: #e2e8f0;
+        }
+        body.dark-mode .todo-item.editing {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Section -->
+        <div class="app-header">
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+            <h1>My Todo List</h1>
+            <p>Stay organized and boost your productivity!</p>
+        </div>
+
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="input-container">
+                <input type="text" class="todo-input" placeholder="What needs to be done today?" id="todoInput" maxlength="200">
+                <div style="display: flex; gap: 10px; margin: 15px 0 10px 0; align-items: center; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #718096;">
+                        <input type="checkbox" id="isDailyTask" style="transform: scale(1.2);">
+                        🔄 Make this a daily task (resets every day)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #718096;">
+                        <input type="checkbox" id="setReminder" style="transform: scale(1.2);">
+                        🔔 Set reminder
+                    </label>
+                    <input type="datetime-local" id="reminderTime" style="padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; display: none;">
+                </div>
+                <button class="add-btn" onclick="addTodo()" id="addBtn">➕ Add Todo</button>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="filterTodos('all')" data-filter="all">📋 All Tasks</button>
+            <button class="filter-btn" onclick="filterTodos('active')" data-filter="active">⏳ Active</button>
+            <button class="filter-btn" onclick="filterTodos('completed')" data-filter="completed">✅ Completed</button>
+            <button class="filter-btn" onclick="filterTodos('monthly')" data-filter="monthly">📅 Monthly Planner</button>
+        </div>
+
+        <!-- Todos Display Section -->
+        <div class="todos-section" id="todosContainer">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">📝</div>
+                <h3>No tasks yet</h3>
+                <p>Add a new todo above to get started with your productivity journey!</p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats" id="stats">
+            <span class="stats-item"><span class="stats-number">0</span> Total</span>
+            <span class="stats-item"><span class="stats-number">0</span> Active</span>
+            <span class="stats-item"><span class="stats-number">0</span> Completed</span>
+        </div>
+    </div>
+
+    <script src="assets/app.js"></script>
+</body>
+</html>

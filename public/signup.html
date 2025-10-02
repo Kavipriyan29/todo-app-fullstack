@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Todo App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .auth-header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #a0aec0;
+        }
+
+        .form-input.error {
+            border-color: #e53e3e;
+        }
+
+        .field-error {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .password-strength {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .strength-weak { color: #e53e3e; }
+        .strength-medium { color: #dd6b20; }
+        .strength-strong { color: #38a169; }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .auth-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+
+        .auth-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .auth-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: #5a67d8;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #e53e3e;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #38a169;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Dark mode styles */
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255,255,255,1);
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+
+        body.dark-mode .auth-container {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .auth-header h1 {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .auth-header p {
+            color: #a0aec0;
+        }
+
+        body.dark-mode .form-group label {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .form-input {
+            background: #4a5568;
+            border-color: #718096;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .form-input::placeholder {
+            color: #a0aec0;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: rgba(45, 55, 72, 0.95);
+            color: #ffd700;
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .auth-header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+        
+        <div class="auth-header">
+            <h1>Create Account</h1>
+            <p>Join us and stay organized!</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <form id="signupForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" class="form-input" placeholder="John">
+                    <div class="field-error" id="firstNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" class="form-input" placeholder="Doe">
+                    <div class="field-error" id="lastNameError"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-input" placeholder="johndoe" required>
+                <div class="field-error" id="usernameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" class="form-input" placeholder="john@example.com" required>
+                <div class="field-error" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Create a strong password" required>
+                <div class="password-strength" id="passwordStrength"></div>
+                <div class="field-error" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                <div class="field-error" id="confirmPasswordError"></div>
+            </div>
+
+            <button type="submit" class="auth-btn" id="signupBtn">
+                <span id="signupText">Create Account</span>
+                <span id="signupSpinner" class="loading" style="display: none;"></span>
+            </button>
+        </form>
+
+        <div class="auth-link">
+            <p>Already have an account? <a href="login.html">Sign in here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode functionality
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const darkBtn = document.querySelector('.dark-mode-toggle');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            darkBtn.innerHTML = isDarkMode ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        // Load dark mode preference
+        function loadDarkModePreference() {
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                const darkBtn = document.querySelector('.dark-mode-toggle');
+                if (darkBtn) darkBtn.innerHTML = '☀️';
+            }
+        }
+
+        // Show/hide messages
+        function showMessage(message, type = 'error') {
+            const errorEl = document.getElementById('errorMessage');
+            const successEl = document.getElementById('successMessage');
+            
+            errorEl.style.display = 'none';
+            successEl.style.display = 'none';
+            
+            if (type === 'error') {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+            } else {
+                successEl.textContent = message;
+                successEl.style.display = 'block';
+            }
+        }
+
+        // Show field error
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorEl = document.getElementById(fieldId + 'Error');
+            
+            field.classList.add('error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        // Clear field error
+        function clearFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorEl = document.getElementById(fieldId + 'Error');
+            
+            field.classList.remove('error');
+            errorEl.style.display = 'none';
+        }
+
+        // Clear all field errors
+        function clearAllFieldErrors() {
+            const fields = ['firstName', 'lastName', 'username', 'email', 'password', 'confirmPassword'];
+            fields.forEach(clearFieldError);
+        }
+
+        // Check password strength
+        function checkPasswordStrength(password) {
+            const strengthEl = document.getElementById('passwordStrength');
+            let strength = 0;
+            let feedback = '';
+
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z\d]/.test(password)) strength++;
+
+            if (password.length === 0) {
+                strengthEl.textContent = '';
+                return;
+            }
+
+            if (strength < 3) {
+                feedback = 'Weak password';
+                strengthEl.className = 'password-strength strength-weak';
+            } else if (strength < 5) {
+                feedback = 'Medium strength';
+                strengthEl.className = 'password-strength strength-medium';
+            } else {
+                feedback = 'Strong password';
+                strengthEl.className = 'password-strength strength-strong';
+            }
+
+            strengthEl.textContent = feedback;
+        }
+
+        // Set loading state
+        function setLoading(loading) {
+            const btn = document.getElementById('signupBtn');
+            const text = document.getElementById('signupText');
+            const spinner = document.getElementById('signupSpinner');
+            
+            btn.disabled = loading;
+            text.style.display = loading ? 'none' : 'inline';
+            spinner.style.display = loading ? 'inline-block' : 'none';
+        }
+
+        // Validate form
+        function validateForm() {
+            clearAllFieldErrors();
+            let isValid = true;
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!username) {
+                showFieldError('username', 'Username is required');
+                isValid = false;
+            } else if (username.length < 3) {
+                showFieldError('username', 'Username must be at least 3 characters');
+                isValid = false;
+            } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                showFieldError('username', 'Username can only contain letters, numbers, and underscores');
+                isValid = false;
+            }
+
+            if (!email) {
+                showFieldError('email', 'Email is required');
+                isValid = false;
+            } else if (!/\S+@\S+\.\S+/.test(email)) {
+                showFieldError('email', 'Please enter a valid email');
+                isValid = false;
+            }
+
+            if (!password) {
+                showFieldError('password', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+                showFieldError('password', 'Password must contain uppercase, lowercase, and number');
+                isValid = false;
+            }
+
+            if (!confirmPassword) {
+                showFieldError('confirmPassword', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showFieldError('confirmPassword', 'Passwords do not match');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Event listeners
+        document.getElementById('password').addEventListener('input', (e) => {
+            checkPasswordStrength(e.target.value);
+        });
+
+        // Signup form handler
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            const formData = {
+                username: document.getElementById('username').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim()
+            };
+            
+            setLoading(true);
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store token and user data
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showMessage('Account created successfully! Redirecting...', 'success');
+                    
+                    // Redirect to main app
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    if (data.errors && Array.isArray(data.errors)) {
+                        // Handle validation errors
+                        data.errors.forEach(error => {
+                            if (error.param) {
+                                showFieldError(error.param, error.msg);
+                            }
+                        });
+                    } else {
+                        showMessage(data.message || 'Registration failed');
+                    }
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showMessage('Network error. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Check if already logged in
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Verify token with server
+                fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    }
+                })
+                .catch(error => {
+                    // Token invalid, remove it
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDarkModePreference();
+            checkAuthStatus();
+        });
+    </script>
+</body>
+</html>
