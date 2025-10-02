@@ -2,7 +2,7 @@
   "name": "todo-app-fullstack",
   "version": "1.0.0",
   "description": "Full-stack Todo Application with Authentication",
-  "main": "server.js",
+  "main": "server-simple.js",
   "scripts": {
     "start": "node server-simple.js",
     "start-full": "node server.js",
