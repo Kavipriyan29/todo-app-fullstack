@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #5a67d8; }
+        .result { background: #f7fafc; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #667eea; }
+        .error { border-left-color: #e53e3e; background: #fed7d7; }
+        .success { border-left-color: #38a169; background: #c6f6d5; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Todo App API Test</h1>
+    
+    <h2>API Health Check</h2>
+    <button onclick="testHealth()">Test API Health</button>
+    <div id="healthResult" class="result" style="display: none;"></div>
+    
+    <h2>User Registration Test</h2>
+    <button onclick="testRegister()">Test Registration</button>
+    <div id="registerResult" class="result" style="display: none;"></div>
+    
+    <h2>Dark Mode Toggle Test</h2>
+    <button onclick="testDarkMode()">Toggle Dark Mode</button>
+    
+    <h2>JavaScript Loading Test</h2>
+    <button onclick="testJS()">Test JavaScript</button>
+    <div id="jsResult" class="result" style="display: none;"></div>
+
+    <script>
+        // Test API Health
+        async function testHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ API Health: OK<br>Status: ${data.status}<br>Users: ${data.users}<br>Todos: ${data.todos}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ API Error: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Network Error: ${error.message}`;
+            }
+        }
+        
+        // Test Registration
+        async function testRegister() {
+            const resultDiv = document.getElementById('registerResult');
+            resultDiv.style.display = 'block';
+            
+            const testUser = {
+                username: 'testuser' + Date.now(),
+                email: 'test' + Date.now() + '@example.com',
+                password: 'Test123!',
+                firstName: 'Test',
+                lastName: 'User'
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testUser)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Registration Success!<br>User: ${data.user.username}<br>Token: ${data.token.substring(0, 20)}...`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Registration Error: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Network Error: ${error.message}`;
+            }
+        }
+        
+        // Test Dark Mode
+        function testDarkMode() {
+            document.body.style.background = document.body.style.background === 'black' ? 'white' : 'black';
+            document.body.style.color = document.body.style.color === 'white' ? 'black' : 'white';
+        }
+        
+        // Test JavaScript
+        function testJS() {
+            const resultDiv = document.getElementById('jsResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = '✅ JavaScript is working! Current time: ' + new Date().toLocaleString();
+        }
+    </script>
+</body>
+</html>

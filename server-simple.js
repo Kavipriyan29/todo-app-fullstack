@@ -1,14 +1,24 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use('/assets', express.static('assets'));
+
+// Add request logging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
 
 // In-memory storage for demo (replace with database later)
 let users = [];
@@ -203,6 +213,16 @@ app.get('/api/health', (req, res) => {
 // Serve frontend
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Serve login page
+app.get('/login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Serve signup page
+app.get('/signup.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
 
 // 404 handler
