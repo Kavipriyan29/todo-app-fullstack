@@ -1,115 +1,135 @@
-# Local Todo App with Monthly Planner & Notifications
+# Todo App Fullstack
 
-A beautiful, responsive todo application with monthly calendar planning and smart notification reminders.
+A full-stack todo application built with Node.js, Express, MongoDB, and vanilla JavaScript.
+
+## 🌐 Live Demo
+
+**🚀 [View Live Application](https://todo-app-fullstack-plum.vercel.app/)**
+
+## 📁 Repository
+
+**📂 [GitHub Repository](https://github.com/Kavipriyan29/todo-app-fullstack)**
 
 ## Features
 
 - ✅ **Todo Management**: Add, complete, delete tasks with priority levels
-- 🔄 **Daily Tasks**: Tasks that automatically reset every day
-- 📅 **Monthly Planner**: Calendar view with per-day notes
-- 🔔 **Smart Reminders**: Set custom reminder times for tasks
+- 🔐 **User Authentication**: Secure login and registration system
+- 👥 **Multi-user Support**: Each user has their own todo lists
 - 📱 **Responsive Design**: Works on desktop, tablet, and mobile
-- 🌙 **Dark Mode**: Toggle between light and dark themes
-- 📊 **Statistics**: Track your productivity with live stats
-- 🔊 **Audio Notifications**: Optional sound alerts for reminders
+- 🔒 **Secure API**: JWT-based authentication and protected routes
+- 📊 **RESTful API**: Well-structured backend with Express.js
+- 🗄️ **MongoDB Integration**: Persistent data storage
 
 ## Quick Start
 
-1. Open `index.html` in your web browser
-2. Allow notifications when prompted (for reminder alerts)
-3. Start adding todos and setting reminders!
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB connection string
+- Git
 
-## Notification Features
+### Installation
 
-### 🔔 Task Reminders
-- **Set Reminders**: Check "Set reminder" when adding a todo
-- **Custom Times**: Pick any future date and time
-- **Browser Notifications**: Get desktop notifications even when tab is closed
-- **Audio Alerts**: Optional sound notification
-- **Visual Indicators**: See reminder times on your tasks
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Kavipriyan29/todo-app-fullstack.git
+   cd todo-app-fullstack
+   ```
 
-### **Notification Types**
-- **Browser Push Notifications**: Desktop alerts with task details
-- **In-App Notifications**: Visual alerts within the app
-- **Audio Beeps**: Gentle sound alerts (can be disabled)
-- **Visual Reminders**: icons show which tasks have reminders
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## How to Use
+3. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and add your MongoDB connection string and JWT secret.
 
-### Todo Management
-- **Add Todo**: Type in the input field and press Enter or click "Add Todo"
-- **Daily Tasks**: Check the "daily task" checkbox for tasks that reset each day
-- **Complete**: Click the checkbox next to any task
-- **Delete**: Click the icon (appears on hover)
-- **Filter**: Use "All Tasks", "Active", "Completed" buttons
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-### Monthly Planner
-- **Switch View**: Click "Monthly Planner" filter
-- **Add Notes**: Click in any day cell and type your notes
-- **Navigate**: Use "Prev" and "Next" buttons
-- **Clear**: Use "Clear" button for individual days or "Clear All" for the month
+5. **Open your browser:**
+   Navigate to `http://localhost:3000` or the port specified in your environment.
 
-### Real-Time Collaboration
-- **Join Workspace**: Enter the same workspace ID on multiple devices
-- **Instant Sync**: Changes appear immediately on all connected devices
-- **Status**: Check the sync status in the top-right corner
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+
+### Todos
+- `GET /api/todos` - Get user's todos
+- `POST /api/todos` - Create new todo
+- `PUT /api/todos/:id` - Update todo
+- `DELETE /api/todos/:id` - Delete todo
 
 ## File Structure
 
 ```
 TODO/
-├── index.html                          # Main HTML file
-├── assets/
-│   ├── app.js                         # Main application logic with Firebase
-│   ├── firebase-config.example.js     # Firebase config template
-│   └── firebase-config.js             # Your Firebase config (create this)
-└── README.md                          # This file
+├── server-simple.js              # Main server file
+├── server.js                     # Full server with advanced features
+├── package.json                  # Dependencies and scripts
+├── vercel.json                   # Vercel deployment config
+├── netlify.toml                  # Netlify deployment config
+├── Procfile                      # Heroku deployment config
+├── .env.example                  # Environment variables template
+├── public/                       # Static files
+│   ├── index.html               # Frontend HTML
+│   ├── styles.css               # Stylesheet
+│   └── script.js                # Frontend JavaScript
+├── assets/                      # Client-side assets
+│   └── app.js                   # Main application logic
+└── README.md                    # This file
 ```
 
-## Firebase Security Rules
+## Deployment
 
-For production use, update your Firestore security rules:
+The application is configured for multiple deployment platforms:
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /workspaces/{workspaceId}/{document=**} {
-      allow read, write: if true; // Customize as needed
-    }
-  }
-}
+### Vercel (Current Live Deployment)
+The app is currently deployed on Vercel at: **https://todo-app-fullstack-plum.vercel.app/**
+
+### Other Deployment Options
+- **Heroku**: Use the included `Procfile`
+- **Netlify**: Frontend can be deployed separately using `netlify.toml`
+- **Railway/Vercel**: Full-stack deployment supported
+
+## Environment Variables
+
+Create a `.env` file with:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+PORT=3000
+NODE_ENV=development
 ```
 
-## Browser Compatibility
+## Technologies Used
 
-- Chrome/Edge: Full support
-- Firefox: Full support
-- Safari: Full support
-- Mobile browsers: Full support
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JWT (JSON Web Tokens)
+- **Frontend**: Vanilla JavaScript, HTML5, CSS3
+- **Security**: bcryptjs, helmet, cors, express-rate-limit
+- **Deployment**: Vercel, Heroku, Netlify compatible
 
-## Troubleshooting
+## Contributing
 
-**"Firebase not configured" message:**
-- Make sure you've created `assets/firebase-config.js` with your Firebase settings
-
-**Real-time sync not working:**
-- Check your internet connection
-- Verify Firebase config is correct
-- Make sure Firestore is enabled in Firebase Console
-
-**App not loading:**
-- Make sure you're opening `index.html` via a web server (not file://)
-- For local testing, use Live Server extension in VS Code or similar
-
-## Development
-
-The app uses ES6 modules and Firebase v10. No build process required - just open in a modern browser!
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
-MIT License - feel free to use and modify as needed.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Enjoy staying organized with your real-time todo app! 🎉**
+**Made with ❤️ by [Kavipriyan29](https://github.com/Kavipriyan29)**
