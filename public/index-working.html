@@ -247,8 +247,8 @@
             background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
         }
 
-        body.dark-mode .container {
-            background: rgba(45, 55, 72, 0.95);
+        body.dark-mode .user-welcome {
+            background: rgba(45, 55, 72, 0.8);
             color: #e2e8f0;
         }
 
@@ -290,7 +290,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="user-info"></div>
+            <div class="user-info" id="userInfo" style="display: none;"></div>
             
             <button class="dark-mode-toggle" id="darkModeToggle">
                 <i class="fas fa-moon"></i>

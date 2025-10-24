@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+</head>
+<body>
+    <h1>Authentication System Test</h1>
+    <div id="results"></div>
+
+    <script>
+        async function testAuth() {
+            const results = document.getElementById('results');
+
+            // Test health endpoint
+            try {
+                const healthResponse = await fetch('/api/health');
+                const healthData = await healthResponse.json();
+                results.innerHTML += `<p>✅ Health Check: ${JSON.stringify(healthData)}</p>`;
+            } catch (error) {
+                results.innerHTML += `<p>❌ Health Check Failed: ${error.message}</p>`;
+            }
+
+            // Test signup
+            try {
+                const signupResponse = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        email: 'test@example.com',
+                        password: 'testpass123',
+                        firstName: 'Test',
+                        lastName: 'User'
+                    })
+                });
+                const signupData = await signupResponse.json();
+                results.innerHTML += `<p>✅ Signup: ${JSON.stringify(signupData)}</p>`;
+            } catch (error) {
+                results.innerHTML += `<p>❌ Signup Failed: ${error.message}</p>`;
+            }
+
+            // Test login
+            try {
+                const loginResponse = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'testpass123'
+                    })
+                });
+                const loginData = await loginResponse.json();
+                results.innerHTML += `<p>✅ Login: ${JSON.stringify(loginData)}</p>`;
+            } catch (error) {
+                results.innerHTML += `<p>❌ Login Failed: ${error.message}</p>`;
+            }
+        }
+
+        testAuth();
+    </script>
+</body>
+</html>

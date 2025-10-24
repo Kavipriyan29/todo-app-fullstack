@@ -225,8 +225,18 @@ app.get('/login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login-working.html'));
 });
 
+// Serve login page (alternative route)
+app.get('/login-working.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login-working.html'));
+});
+
 // Serve signup page
 app.get('/signup.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'signup-working.html'));
+});
+
+// Serve signup page (alternative route)
+app.get('/signup-working.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'signup-working.html'));
 });
 

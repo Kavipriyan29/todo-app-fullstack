@@ -59,14 +59,21 @@ function initializeDarkMode() {
 // Authentication Check
 function checkAuthentication() {
     console.log('🔐 Checking authentication...');
-    
+
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
-    
+    const userInfo = document.getElementById('userInfo');
+
     if (token && user) {
         console.log('✅ User is logged in');
-        showUserInterface(JSON.parse(user));
-        loadTodos();
+        try {
+            const userData = JSON.parse(user);
+            showUserInterface(userData);
+            loadTodos();
+        } catch (error) {
+            console.error('❌ Error parsing user data:', error);
+            showLoginPrompt();
+        }
     } else {
         console.log('❌ User not logged in');
         showLoginPrompt();
@@ -75,7 +82,7 @@ function checkAuthentication() {
 
 // Show user interface
 function showUserInterface(user) {
-    const userInfo = document.querySelector('.user-info');
+    const userInfo = document.getElementById('userInfo');
     if (userInfo) {
         userInfo.innerHTML = `
             <div class="user-welcome">
@@ -89,13 +96,13 @@ function showUserInterface(user) {
 
 // Show login prompt
 function showLoginPrompt() {
-    const userInfo = document.querySelector('.user-info');
+    const userInfo = document.getElementById('userInfo');
     if (userInfo) {
         userInfo.innerHTML = `
             <div class="user-welcome">
-                <a href="/login.html" style="color: #667eea; text-decoration: none;">Login</a>
-                <span>|</span>
-                <a href="/signup.html" style="color: #667eea; text-decoration: none;">Sign Up</a>
+                <a href="/login.html" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 14px;">Login</a>
+                <span style="color: rgba(255,255,255,0.7);">|</span>
+                <a href="/signup.html" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 14px;">Sign Up</a>
             </div>
         `;
         userInfo.style.display = 'block';
